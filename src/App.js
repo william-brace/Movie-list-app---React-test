@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./App.css";
 import MovieList from "./components/movieList";
 
+
 class App extends Component {
   state = {};
   render() {
