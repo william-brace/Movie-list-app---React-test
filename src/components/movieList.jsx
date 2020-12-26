@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
-import Movie from "./movie";
+import MoviesTable from "./moviesTable";
 import Pagination from "./common/pagination";
 import { paginate } from "../utils/paginate";
 import ListGroup from "./common/listGroup";
 import { getGenres } from "../services/fakeGenreService";
 import { filterByGenre } from "../utils/filterByGenre";
+import _ from "lodash";
 
 class MovieList extends Component {
   state = {
@@ -14,6 +15,7 @@ class MovieList extends Component {
     currentPage: 1,
     genres: getGenres(),
     currentGenre: "AllMovies",
+    sortColumn: { path: "title", order: "asc" },
   };
 
   handleDelete = (movie) => {
@@ -29,14 +31,19 @@ class MovieList extends Component {
     this.setState({ currentGenre: genre, currentPage: 1 });
   };
 
+  handleSort = (sortColumn) => {
+    this.setState({ sortColumn });
+  };
+
   render() {
-    let { length: count } = this.state.movies;
+    // let { length: count } = this.state.movies;
     const {
       pageSize,
       currentPage,
       movies: allMovies,
       genres,
       currentGenre,
+      sortColumn,
     } = this.state;
 
     let movies;
@@ -44,12 +51,14 @@ class MovieList extends Component {
 
     if (currentGenre !== "AllMovies") {
       console.log("Running!");
-      movies = filterByGenre(currentGenre, allMovies);
-      console.log(movies);
-      movies = paginate(movies, currentPage, pageSize);
+      let filtered = filterByGenre(currentGenre, allMovies);
+      console.log(filtered);
+      let ordered = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+      movies = paginate(ordered, currentPage, pageSize);
       movieCount = movies.length;
     } else {
-      movies = paginate(allMovies, currentPage, pageSize);
+      let ordered = _.orderBy(allMovies, [sortColumn.path], [sortColumn.order]);
+      movies = paginate(ordered, currentPage, pageSize);
       console.log(movies);
       movieCount = allMovies.length;
     }
@@ -70,26 +79,12 @@ class MovieList extends Component {
           </div>
           <div className="col-6">
             <p>There are {movieCount} movies in the database.</p>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th scope="col">Title</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Stock</th>
-                  <th scope="col">Rate</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {movies.map((movie) => (
-                  <Movie
-                    key={movie._id}
-                    movie={movie}
-                    onDelete={this.handleDelete}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <MoviesTable
+              movies={movies}
+              sortColumn={sortColumn}
+              onDelete={this.handleDelete}
+              onSort={this.handleSort}
+            />
             <Pagination
               itemsCount={movieCount}
               pageSize={pageSize}
