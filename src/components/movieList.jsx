@@ -50,16 +50,13 @@ class MovieList extends Component {
     let movieCount;
 
     if (currentGenre !== "AllMovies") {
-      console.log("Running!");
       let filtered = filterByGenre(currentGenre, allMovies);
-      console.log(filtered);
       let ordered = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
       movies = paginate(ordered, currentPage, pageSize);
       movieCount = movies.length;
     } else {
       let ordered = _.orderBy(allMovies, [sortColumn.path], [sortColumn.order]);
       movies = paginate(ordered, currentPage, pageSize);
-      console.log(movies);
       movieCount = allMovies.length;
     }
 
