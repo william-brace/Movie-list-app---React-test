@@ -66,7 +66,7 @@ class MovieList extends Component {
     return (
       <React.Fragment>
         <div className="row">
-          <div className="col-6">
+          <div className="col-3">
             <ListGroup
               genres={genres}
               id={currentGenre._id}
@@ -74,7 +74,7 @@ class MovieList extends Component {
               onItemSelect={this.handleGenreSelect}
             />
           </div>
-          <div className="col-6">
+          <div className="col-9">
             <p>There are {movieCount} movies in the database.</p>
             <MoviesTable
               movies={movies}
